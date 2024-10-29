@@ -66,13 +66,25 @@ que pode ser exibido como uma sequência de imagens ou como uma animação. (Ter
 
 Ao implementar uma solução concorrente para a simulação de autômatos celulares, a tarefa principal – 
 atualização do grid ao longo do tempo – pode ser dividida entre diferentes threads ou rotinas paralelas.
-Acelerando significativamente o programa. Seria muito interessante, também, usar GPU's para um paralelismo
-ainda maior - isso ficará a mercê da nossa capacidade :).
+Acelerando significativamente o programa.
 
 Inicialmente, dividiremos os espaço da maneira mais simples que conheçemos - assim como nas primeiras aulas - designaremos
 blocos para cada thread, de forma a isolar o espaço de atuação de cada uma delas. Nesse quesito, esse programa é 
 \href{https://en.wikipedia.org/wiki/Embarrassingly_parallel}{embaraçosamente paralelo}.
 Posteriormente, podemos estudar formas mais avançadas de otimização do Jogo da Vida e ver as possibilidades de paralelismo nelas.
+
+Entre essas formas mais avançadas estão:
+\begin{itemize}
+    \item Uso de outras estruturas de dados como Matrizes Esparças
+    \item Aceleração com GPU, milhares de células podem ser atualizadas paralelamente
+    \item Detecção de áreas de atividade, ignorando regiões vazias.
+    \item Balanceamento dinâmico do workload das threads a partir da atividade dos blocos
+    \item Usar hashing para acelerar computacionalmente o cálculo de configurações conhecidas (\href{https://en.wikipedia.org/wiki/Hashlife}{Hashlife}), mantendo
+    uma estrutura leitor/escritor.
+    \item Entre muitos outros.
+\end{itemize}
+
+Algo que seria muito divertido, mas parece ser muito difícil é considerar topologias distintas!
 
 %-----------------------------------------------------------------------
 \section{Casos de teste de corretude e desempenho}
@@ -107,6 +119,7 @@ será divertido também observar qual é o impacto da paralelização.
         \item \url{https://kodub.itch.io/game-of-life-3d}
         \item \url{https://en.wikipedia.org/wiki/John_Horton_Conway}
         \item \url{https://en.wikipedia.org/wiki/Zero-player_game}
+        \item \url{https://en.wikipedia.org/wiki/Hashlife}
         \item Slides da professora Silvana Rossetto
     \end{itemize}
 }
