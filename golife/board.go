@@ -25,7 +25,7 @@ func isPower2(n int) bool {
 	return true
 }
 
-func CreateBoard(sideLength int, gophers int) Board {
+func CreateBoard(sideLength int) Board {
 	//check if gophers and sideLength are powers of two
 	if !isPower2(sideLength) {
 		panic("ERROR: Board Side Length MUST be a power of 2!")
@@ -48,7 +48,7 @@ func CreateBoard(sideLength int, gophers int) Board {
 	}
 }
 
-func (b *Board) numNeighbohrs(i, j int) int {
+func (b *Board) numNeighbors(i, j int) int {
 	n := 0
 	size := b.sideLength
 	for x := -1; x <= 1; x++ {
@@ -72,7 +72,7 @@ func (b *Board) subTableWork(x, y, dwidth, dheight int) int {
 	size := b.sideLength
 	for i := y; i < dheight; i++ {
 		for j := x; j < dwidth; j++ {
-			nn := b.numNeighbohrs(i, j)
+			nn := b.numNeighbors(i, j)
 
 			if b.Boards[0][i*size+j] == 1 {
 				if nn < 2 || nn > 3 {
@@ -92,10 +92,14 @@ func (b *Board) subTableWork(x, y, dwidth, dheight int) int {
 	return alive
 }
 
+func (b *Board) swapBoards() {
+	b.Boards[0], b.Boards[1] = b.Boards[1], b.Boards[0]
+}
+
 // inicialmente, maneira mais boba possivel, divide o tabuleiro entre os gophers
 func (b *Board) IterateSequentially() {
 	b.subTableWork(0, 0, b.sideLength, b.sideLength)
-	b.Boards[0], b.Boards[1] = b.Boards[1], b.Boards[0]
+	b.swapBoards()
 }
 
 // Argument MUST be a power of 2!
@@ -147,6 +151,5 @@ func (b *Board) IterateConcurrently(gophers int) {
 
 	//wait for all goroutines!
 	wg.Wait()
-	b.Boards[0], b.Boards[1] = b.Boards[1], b.Boards[0]
-
+	b.swapBoards()
 }

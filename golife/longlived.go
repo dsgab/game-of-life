@@ -33,7 +33,7 @@ func CreateBoardPool(sideLength int, numWorkers int) *BoardPool {
 	}
 
 	bp := BoardPool{
-		board:       CreateBoard(sideLength, numWorkers),
+		board:       CreateBoard(sideLength),
 		numWorkers:  numWorkers,
 		taskManager: make(chan workArea, numWorkers),
 		wg:          sync.WaitGroup{},
@@ -48,4 +48,18 @@ func CreateBoardPool(sideLength int, numWorkers int) *BoardPool {
 
 func (bp *BoardPool) ReleaseWorkers() {
 	close(bp.taskManager)
+}
+
+func (bp *BoardPool) Iterate() {
+	width, height := bp.board.determineGopherTableSize(bp.numWorkers)
+	side := bp.board.sideLength
+	for x := 0; x < side; x += width {
+		for y := 0; y < side; y += height {
+			bp.wg.Add(1)
+			bp.taskManager <- workArea{x, y, width, height}
+		}
+	}
+	bp.wg.Wait()
+
+	bp.board.swapBoards()
 }
