@@ -10,7 +10,7 @@ import (
 // var verbose *bool = flag.Bool("v", false, "prints the number of iterations per second")
 
 func main() {
-	var boardSideLength int = 1 << 10
+	var boardSideLength int = 1 << 9
 	var nIterations int = 1 << 10
 	var nWorkers = runtime.GOMAXPROCS(0)
 	var prob float64 = 0.5

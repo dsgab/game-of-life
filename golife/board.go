@@ -70,8 +70,8 @@ func (b *Board) numNeighbors(i, j int) int {
 func (b *Board) subTableWork(x, y, dwidth, dheight int) int {
 	alive := 0
 	size := b.sideLength
-	for i := y; i < dheight; i++ {
-		for j := x; j < dwidth; j++ {
+	for i := y; i < y+dheight; i++ {
+		for j := x; j < x+dwidth; j++ {
 			nn := b.numNeighbors(i, j)
 
 			if b.Boards[0][i*size+j] == 1 {
