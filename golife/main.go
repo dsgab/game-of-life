@@ -9,8 +9,17 @@ import (
 
 // var verbose *bool = flag.Bool("v", false, "prints the number of iterations per second")
 
+func PrintBoard(b *Board) {
+	for i := 0; i < b.sideLength; i++ {
+		for j := 0; j < b.sideLength; j++ {
+			fmt.Printf("%d", b.Boards[0][i*b.sideLength+j])
+		}
+		fmt.Println()
+	}
+}
+
 func main() {
-	var boardSideLength int = 1 << 9
+	var boardSideLength int = 1 << 7
 	var nIterations int = 1 << 10
 	var nWorkers = runtime.GOMAXPROCS(0)
 	var prob float64 = 0.5
@@ -20,7 +29,6 @@ func main() {
 	b1 := CreateBoard(boardSideLength)
 	b2 := CreateBoard(boardSideLength)
 	bp := CreateBoardPool(boardSideLength, nWorkers)
-
 	//populate all boards simultaneously
 	for i := 0; i < boardSideLength; i++ {
 		for j := 0; j < boardSideLength; j++ {
@@ -32,29 +40,31 @@ func main() {
 		}
 	}
 
-	//Concurrent time
-	start := time.Now()
+	var start time.Time
+	var t time.Time
+
+	// Concurrent time
+	start = time.Now()
 	for i := 0; i < nIterations; i++ {
-		b1.IterateConcurrently(nWorkers)
+		b2.IterateConcurrently(nWorkers)
 	}
-	t := time.Now()
+	t = time.Now()
 	fmt.Println("Concurrent program elapsed: ", t.Sub(start).String())
 
-	//Concurrent pool
+	//Pool Concurrent time
 	start = time.Now()
 	for i := 0; i < nIterations; i++ {
 		bp.Iterate()
 	}
+	bp.ReleaseWorkers()
 	t = time.Now()
 	fmt.Println("Pool Concurrent program elapsed: ", t.Sub(start).String())
-	bp.ReleaseWorkers()
 
 	//Sequential time!
 	start = time.Now()
 	for i := 0; i < nIterations; i++ {
-		b2.IterateSequentially()
+		b1.IterateSequentially()
 	}
 	t = time.Now()
 	fmt.Println("Sequential program elapsed: ", t.Sub(start).String())
-
 }

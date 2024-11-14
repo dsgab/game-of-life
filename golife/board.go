@@ -48,18 +48,20 @@ func CreateBoard(sideLength int) Board {
 	}
 }
 
+// linha i coluna j
 func (b *Board) numNeighbors(i, j int) int {
 	n := 0
 	size := b.sideLength
-	for x := -1; x <= 1; x++ {
-		xi := (i + x + b.sideLength) % b.sideLength
-		for y := -1; y <= 1; y++ {
+	for y := -1; y <= 1; y++ {
+		yi := (i + y + b.sideLength) % b.sideLength
+		for x := -1; x <= 1; x++ {
 			if x == 0 && y == 0 {
 				continue
 			}
-			yj := (j + y + b.sideLength) % b.sideLength
 
-			n += b.Boards[0][yj*size+xi]
+			xj := (x + j + b.sideLength) % b.sideLength
+
+			n += b.Boards[0][yi*size+xj]
 		}
 	}
 
@@ -67,25 +69,32 @@ func (b *Board) numNeighbors(i, j int) int {
 }
 
 // returns number of alive cells in table!
-func (b *Board) subTableWork(x, y, dwidth, dheight int) int {
+// linha i coluna j
+func (b *Board) subTableWork(i, j, height, width int) int {
 	alive := 0
-	size := b.sideLength
-	for i := y; i < y+dheight; i++ {
-		for j := x; j < x+dwidth; j++ {
-			nn := b.numNeighbors(i, j)
+	side := b.sideLength
 
-			if b.Boards[0][i*size+j] == 1 {
+	for y := i; y < i+height; y++ {
+		for x := j; x < j+width; x++ {
+			nn := b.numNeighbors(y, x)
+
+			if b.Boards[0][y*side+x] == 1 {
 				if nn < 2 || nn > 3 {
 					//se vivo, mas menos de 2 ou mais de 3 vizinhos, morre
-					b.Boards[1][i*size+j] = 0
+					b.Boards[1][y*side+x] = 0
 				} else {
+					b.Boards[1][y*side+x] = 1
 					alive++
 				}
 
-			} else if nn == 3 {
-				//se morto, mas com 3 vizinhos, vive
-				b.Boards[1][i*size+j] = 1
-				alive++
+			} else {
+				if nn == 3 {
+					//se morto, mas com 3 vizinhos, vive
+					b.Boards[1][y*side+x] = 1
+					alive++
+				} else {
+					b.Boards[1][y*side+x] = 0
+				}
 			}
 		}
 	}
@@ -118,7 +127,14 @@ func (b *Board) determineGopherTableSize(gophers int) (int, int) {
 	width /= sqrRoot
 	height /= sqrRoot
 
-	return width, height
+	if width == 0 {
+		width = 1
+	}
+	if height == 0 {
+		height = 1
+	}
+
+	return height, width
 }
 
 // The number of goroutines must be a power of 2
@@ -126,25 +142,16 @@ func (b *Board) IterateConcurrently(gophers int) {
 	// test if number of gophers is square!
 	width, height := b.determineGopherTableSize(gophers)
 
-	// in this case there are more gophers than cells
-	if height == 0 {
-		height = 1
-	}
-
-	if width == 0 {
-		width = 1
-	}
-
 	var wg sync.WaitGroup
-	for x := 0; x < b.sideLength; x += width {
-		for y := 0; y < b.sideLength; y += height {
+	for y := 0; y < b.sideLength; y += height {
+		for x := 0; x < b.sideLength; x += width {
 			wg.Add(1)
 
 			//asks for a goroutine to do a table!
 			go func(i, j int) {
 				b.subTableWork(i, j, width, height)
 				wg.Done()
-			}(x, y)
+			}(y, x)
 
 		}
 	}
