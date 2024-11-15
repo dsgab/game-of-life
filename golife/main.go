@@ -7,6 +7,19 @@ import (
 	"time"
 )
 
+func board_different(b1 *Board, b2 *Board) bool {
+	if b1.sideLength != b2.sideLength {
+		return true
+	}
+
+	for i := 0; i < b1.sideLength*b1.sideLength; i++ {
+		if b1.Boards[0][i] != b2.Boards[0][i] {
+			return true
+		}
+	}
+	return false
+}
+
 // var verbose *bool = flag.Bool("v", false, "prints the number of iterations per second")
 
 func PrintBoard(b *Board) {
@@ -19,7 +32,7 @@ func PrintBoard(b *Board) {
 }
 
 func main() {
-	var boardSideLength int = 1 << 7
+	var boardSideLength int = 1 << 9
 	var nIterations int = 1 << 10
 	var nWorkers = runtime.GOMAXPROCS(0)
 	var prob float64 = 0.5
@@ -55,6 +68,7 @@ func main() {
 	start = time.Now()
 	for i := 0; i < nIterations; i++ {
 		bp.Iterate()
+
 	}
 	bp.ReleaseWorkers()
 	t = time.Now()
