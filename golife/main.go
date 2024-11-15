@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+/*
 func board_different(b1 *Board, b2 *Board) bool {
 	if b1.sideLength != b2.sideLength {
 		return true
@@ -19,6 +20,7 @@ func board_different(b1 *Board, b2 *Board) bool {
 	}
 	return false
 }
+*/
 
 // var verbose *bool = flag.Bool("v", false, "prints the number of iterations per second")
 
