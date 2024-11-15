@@ -33,7 +33,7 @@ int check_if_boards_different(board_t* b1, board_t* b2){
 int main(void){
     int sideLength = 1<<10;
     int iterations = 1<<9;
-    int nWorkers = 16;
+    int nWorkers = 8;
     double p = 0.5;
 
     board_t* b1 = create_board(sideLength);
@@ -61,7 +61,7 @@ int main(void){
     gettimeofday(&tv1,NULL);
     pool_board* pb = create_pool(nWorkers,b2);
     start_pool(pb);
-    
+
     for(int i = 0; i < iterations; i++){
         iterate_concurrently(pb);
     }    

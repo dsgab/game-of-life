@@ -9,7 +9,9 @@ typedef struct{
     ch_t *work_channel;
     int num_threads;
     pthread_t* tids;
-    wait_group wg_done;
+    // wait_group wg_done;
+    wait_group_sema wg_done;
+
 }pool_board;
 
 pool_board* create_pool(int num_threads, board_t* b);
