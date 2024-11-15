@@ -1,3 +1,5 @@
+#pragma once
+
 //Definindo um board, assim como feito no programa em go
 
 typedef struct _board_t{

@@ -1,7 +1,9 @@
+#pragma once
 #include <semaphore.h>
 
 typedef struct{
-    int x,y,width,height;
+    int x,y;
+    int width,height;
     int ok; // just as in go, channel returns two things
 }ch_message;
 
