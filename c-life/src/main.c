@@ -30,10 +30,21 @@ int check_if_boards_different(board_t* board1, board_t* board2){
 }
 
 
-int main(void){
-    int sideLength = 1<<10;
-    int iterations = 1<<9;
-    int nWorkers = 8;
+int main(int argc, char* argv[]){
+    if(argc < 4){
+        printf("Missing arguments: %s <BOARD_LENGTH> <NUMBER_ITERATIONS> <NUMBER_THREADS>\n", argv[0]);
+        return 1;
+    }
+    int sideLength = atoi(argv[1]); // 1000
+    int iterations = atoi(argv[2]); // 1<<9
+    int nWorkers = atoi(argv[3]); // 8
+
+    /* These variables values have to be at least 1 so that the program works properly */
+    if(sideLength < 1 || iterations < 1 || nWorkers < 1){
+        puts("Invalid argument(s).");
+        return 2;
+    }
+
     double probability = 0.5;
 
     board_t* board1 = create_board(sideLength);
