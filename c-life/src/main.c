@@ -67,7 +67,7 @@ int main(void){
     }    
     liberate_threads(poolBoard);
     gettimeofday(&timeValue2,NULL);
-    printf ("Concurrent program elapsed: %lfs\n",
+    printf ("Concurrent program elapsed time: %lfs\n",
         (double) (timeValue2.tv_usec - timeValue1.tv_usec) / 1000000 +
         (double) (timeValue2.tv_sec - timeValue1.tv_sec));
     
@@ -78,7 +78,7 @@ int main(void){
     }
     gettimeofday(&timeValue2,NULL);
 
-    printf ("Sequential program elapsed: %lfs\n",
+    printf ("Sequential program elapsed time: %lfs\n",
         (double) (timeValue2.tv_usec - timeValue1.tv_usec) / 1000000 +
         (double) (timeValue2.tv_sec - timeValue1.tv_sec));
     
