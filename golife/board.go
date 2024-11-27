@@ -27,10 +27,6 @@ func isPower2(n int) bool {
 
 func CreateBoard(sideLength int) Board {
 	//check if gophers and sideLength are powers of two
-	if !isPower2(sideLength) {
-		panic("ERROR: Board Side Length MUST be a power of 2!")
-	}
-
 	/*
 		if !isPower2(gophers) {
 			panic("ERROR: Number of workers MUST be a power of 2!")
@@ -113,8 +109,8 @@ func (b *Board) IterateSequentially() {
 
 // Argument MUST be a power of 2!
 func (b *Board) determineGopherTableSize(gophers int) (int, int) {
-	if !isPower2(gophers) {
-		panic("The number fo goroutines MUST be a power of 2!")
+	if !isPower2(b.sideLength) || !isPower2(gophers) {
+		return 1, b.sideLength
 	}
 
 	sqrRoot := int(math.Sqrt(float64(gophers)))
@@ -149,11 +145,27 @@ func (b *Board) IterateConcurrently(gophers int) {
 
 			//asks for a goroutine to do a table!
 			go func(i, j int) {
-				b.subTableWork(i, j, width, height)
+				b.subTableWork(i, j, height, width)
 				wg.Done()
 			}(y, x)
 
 		}
+	}
+
+	//wait for all goroutines!
+	wg.Wait()
+	b.swapBoards()
+}
+
+func (b *Board) IterateConcurrentlyByLine(gophers int) {
+	// test if number of gophers is square!
+	var wg sync.WaitGroup
+	for y := 0; y < b.sideLength; y++ {
+		wg.Add(1)
+		go func(i, j int) {
+			b.subTableWork(i, j, 1, b.sideLength)
+			wg.Done()
+		}(y, 0)
 	}
 
 	//wait for all goroutines!

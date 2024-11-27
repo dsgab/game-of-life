@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"runtime"
 	"time"
 )
 
@@ -22,7 +21,6 @@ func board_different(b1 *Board, b2 *Board) bool {
 }
 */
 
-// var verbose *bool = flag.Bool("v", false, "prints the number of iterations per second")
 
 func PrintBoard(b *Board) {
 	for i := 0; i < b.sideLength; i++ {
@@ -34,9 +32,9 @@ func PrintBoard(b *Board) {
 }
 
 func main() {
-	var boardSideLength int = 1 << 9
+	var boardSideLength int = 1 << 10
 	var nIterations int = 1 << 10
-	var nWorkers = runtime.GOMAXPROCS(0)
+	var nWorkers = 8
 	var prob float64 = 0.5
 
 	fmt.Printf("Board Size: %d, nIterations: %d, nWorkers: %d\n", boardSideLength, nIterations, nWorkers)
@@ -61,7 +59,7 @@ func main() {
 	// Concurrent time
 	start = time.Now()
 	for i := 0; i < nIterations; i++ {
-		b2.IterateConcurrently(nWorkers)
+		b2.IterateConcurrentlyByLine(nWorkers)
 	}
 	t = time.Now()
 	fmt.Println("Concurrent program elapsed: ", t.Sub(start).String())
