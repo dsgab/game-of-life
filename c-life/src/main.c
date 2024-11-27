@@ -41,7 +41,7 @@ int main(void){
 
     int alive = 0;
 
-    printf("Board Size: %d, Iterations: %d, nWorkers: %d\n",sideLength,iterations,nWorkers);
+    printf("Board Size: %d X %d, Iterations: %d, nWorkers: %d\n",sideLength,sideLength,iterations,nWorkers);
 
     //seeds random!
     srand(time(NULL));
