@@ -2,7 +2,7 @@
 CXX := gcc
 CXXFLAGS := -O3 -Wall 
 LDFLAGS := # -lncurses
-DBGFLAGS := -g
+DBGFLAGS := -g -DDEBUG
 CCOBJFLAGS := $(CXXFLAGS) -c
 
 # path macros
