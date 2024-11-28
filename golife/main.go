@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"runtime"
 	"strconv"
 	"time"
 )
@@ -54,6 +55,7 @@ func main() {
 	}
 
 	nWorkers, err := strconv.Atoi(args[2])
+	runtime.GOMAXPROCS(nWorkers)
 	if err != nil {
 		log.Fatalf("Error reading <NUMBER_THREADS>, read: %s\n", args[2])
 	}
@@ -83,51 +85,59 @@ func main() {
 	var start time.Time
 	var t time.Time
 
-	// Concurrent time
-	start = time.Now()
-	for i := 0; i < nIterations; i++ {
-		b2.IterateConcurrentlyByLine(nWorkers)
-	}
-	t = time.Now()
+	//Alterações para testar tempo de execução
+	if nWorkers > 1 {
 
-	durations = append(durations, t.Sub(start))
+		// Concurrent time
+		start = time.Now()
+		for i := 0; i < nIterations; i++ {
+			b2.IterateConcurrentlyByLine(nWorkers)
+		}
+		t = time.Now()
 
-	if *verboseFlag {
-		fmt.Println("Concurrent program elapsed: ", durations[0])
-	}
+		durations = append(durations, t.Sub(start))
 
-	//Pool Concurrent time
-	start = time.Now()
-	for i := 0; i < nIterations; i++ {
-		bp.Iterate()
+		if *verboseFlag {
+			fmt.Println("Concurrent program elapsed: ", durations[0])
+		}
 
-	}
-	bp.ReleaseWorkers()
-	t = time.Now()
+		//Pool Concurrent time
+		start = time.Now()
+		for i := 0; i < nIterations; i++ {
+			bp.Iterate()
 
-	durations = append(durations, t.Sub(start))
+		}
+		bp.ReleaseWorkers()
+		t = time.Now()
 
-	if *verboseFlag {
-		fmt.Println("Pool Concurrent program elapsed: ", durations[1])
-	}
+		durations = append(durations, t.Sub(start))
 
-	//Sequential time!
-	start = time.Now()
-	for i := 0; i < nIterations; i++ {
-		b1.IterateSequentially()
-	}
-	t = time.Now()
+		if *verboseFlag {
+			fmt.Println("Pool Concurrent program elapsed: ", durations[1])
+		}
 
-	durations = append(durations, t.Sub(start))
-
-	if *verboseFlag {
-		fmt.Println("Sequential program elapsed: ", durations[2])
-	}
-
-	if !(*verboseFlag) {
 		fmt.Println(durations[0].Seconds())
 		fmt.Println(durations[1].Seconds())
-		fmt.Println(durations[2].Seconds())
-	}
+	} else {
+		//Sequential time!
+		start = time.Now()
+		for i := 0; i < nIterations; i++ {
+			b1.IterateSequentially()
+		}
+		t = time.Now()
 
+		durations = append(durations, t.Sub(start))
+
+		if *verboseFlag {
+			fmt.Print("Sequential program elapsed: ")
+		}
+		fmt.Println(durations[0].Seconds())
+		fmt.Println(durations[0].Seconds())
+	}
+	
+	// if !(*verboseFlag) {
+	// 	fmt.Println(durations[0].Seconds())
+	// 	fmt.Println(durations[1].Seconds())
+	// 	fmt.Println(durations[2].Seconds())
+	// }
 }
