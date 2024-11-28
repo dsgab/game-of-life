@@ -35,11 +35,11 @@ int main(int argc, char* argv[]){
         printf("Missing arguments: %s <BOARD_LENGTH> <NUMBER_ITERATIONS> <NUMBER_THREADS>\n", argv[0]);
         return 1;
     }
-    int sideLength = atoi(argv[1]); // 1000
-    int iterations = atoi(argv[2]); // 1<<9
-    int nWorkers = atoi(argv[3]); // 8
+    int sideLength = atoi(argv[1]);
+    int iterations = atoi(argv[2]);
+    int nWorkers = atoi(argv[3]);
 
-    /* These variables values have to be at least 1 so that the program works properly */
+    // these variables values have to be at least 1 so that the program works properly
     if(sideLength < 1 || iterations < 1 || nWorkers < 1){
         puts("Invalid argument(s).");
         return 2;
@@ -54,21 +54,22 @@ int main(int argc, char* argv[]){
 
     printf("Board Size: %d X %d, Iterations: %d, nWorkers: %d\n",sideLength,sideLength,iterations,nWorkers);
 
-    //seeds random!
+    // seeds random!
     srand(time(NULL));
-    //lets populate randomly manually
+    // lets populate randomly manually
     for(int i = 0; i < sideLength*sideLength; i++){
         board1->boards[0][i] =  ((((double) rand())/RAND_MAX) <= probability);
         board2->boards[0][i] = board1->boards[0][i];
         alive += board1->boards[0][i];
     }
 
+    #ifdef DEBUG
     printf("diffs ? : %d\n",check_if_boards_different(board1,board2));
+    #endif
     
     struct timeval timeValue1, timeValue2;
-        
 
-    //concurrent application!
+    // concurrent application!
     gettimeofday(&timeValue1,NULL);
     pool_board* poolBoard = create_pool(nWorkers,board2);
     start_pool(poolBoard);
@@ -93,7 +94,7 @@ int main(int argc, char* argv[]){
         (double) (timeValue2.tv_usec - timeValue1.tv_usec) / 1000000 +
         (double) (timeValue2.tv_sec - timeValue1.tv_sec));
     
-    //freeing space
+    // freeing space
     destroy_board(board1);
     destroy_board(board2);
     destroy_pool(poolBoard);
