@@ -52,7 +52,7 @@ int main(int argc, char* argv[]){
 
     int alive = 0;
 
-    printf("Board Size: %d X %d, Iterations: %d, nWorkers: %d\n",sideLength,sideLength,iterations,nWorkers);
+    // printf("Board Size: %d X %d, Iterations: %d, nWorkers: %d\n",sideLength,sideLength,iterations,nWorkers);
 
     // seeds random!
     srand(time(NULL));
@@ -69,35 +69,51 @@ int main(int argc, char* argv[]){
     
     struct timeval timeValue1, timeValue2;
 
-    // concurrent application!
-    gettimeofday(&timeValue1,NULL);
-    pool_board* poolBoard = create_pool(nWorkers,board2);
-    start_pool(poolBoard);
+    if(nWorkers > 1){
+        // concurrent application!
+        pool_board* poolBoard = create_pool(nWorkers,board2);
+        gettimeofday(&timeValue1,NULL);
+        start_pool(poolBoard);
 
-    for(int i = 0; i < iterations; i++){
-        iterate_concurrently(poolBoard);
-    }    
-    liberate_threads(poolBoard);
-    gettimeofday(&timeValue2,NULL);
-    printf ("Concurrent program elapsed time: %lfs\n",
-        (double) (timeValue2.tv_usec - timeValue1.tv_usec) / 1000000 +
-        (double) (timeValue2.tv_sec - timeValue1.tv_sec));
-    
-    // sequential application!
-    gettimeofday(&timeValue1,NULL);
-    for(int i = 0; i < iterations; i++){
-        iterate_sequentially(board1);
+        for(int i = 0; i < iterations; i++){
+            iterate_concurrently(poolBoard);
+        }    
+        liberate_threads(poolBoard);
+        gettimeofday(&timeValue2,NULL);
+        // printf ("Concurrent program elapsed time: %lfs\n",
+        //     (double) (timeValue2.tv_usec - timeValue1.tv_usec) / 1000000 +
+        //     (double) (timeValue2.tv_sec - timeValue1.tv_sec));
+        
+
+        printf ("%lf\n",
+            (double) (timeValue2.tv_usec - timeValue1.tv_usec) / 1000000 +
+            (double) (timeValue2.tv_sec - timeValue1.tv_sec));
+        
+        destroy_pool(poolBoard);
+
+    } else {
+        // sequential application!
+        gettimeofday(&timeValue1,NULL);
+        for(int i = 0; i < iterations; i++){
+            iterate_sequentially(board1);
+        }
+        gettimeofday(&timeValue2,NULL);
+
+        printf ("%lf\n",
+            (double) (timeValue2.tv_usec - timeValue1.tv_usec) / 1000000 +
+            (double) (timeValue2.tv_sec - timeValue1.tv_sec));
+        
     }
-    gettimeofday(&timeValue2,NULL);
 
-    printf ("Sequential program elapsed time: %lfs\n",
-        (double) (timeValue2.tv_usec - timeValue1.tv_usec) / 1000000 +
-        (double) (timeValue2.tv_sec - timeValue1.tv_sec));
+    // printf ("Sequential program elapsed time: %lfs\n",
+    //     (double) (timeValue2.tv_usec - timeValue1.tv_usec) / 1000000 +
+    //     (double) (timeValue2.tv_sec - timeValue1.tv_sec));
     
+    
+
     // freeing space
     destroy_board(board1);
     destroy_board(board2);
-    destroy_pool(poolBoard);
 
     return 0;
 }
