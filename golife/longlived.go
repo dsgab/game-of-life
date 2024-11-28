@@ -26,11 +26,7 @@ func (bp *BoardPool) gopherRoutine() {
 	}
 }
 
-// numWorkers must be a power of 2
 func CreateBoardPool(sideLength int, numWorkers int) *BoardPool {
-	if !isPower2(numWorkers) {
-		panic("numWorkers MUST be a power of 2!")
-	}
 
 	bp := BoardPool{
 		board:       CreateBoard(sideLength),

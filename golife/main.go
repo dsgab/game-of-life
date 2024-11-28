@@ -1,8 +1,12 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"log"
 	"math/rand"
+	"os"
+	"strconv"
 	"time"
 )
 
@@ -21,7 +25,6 @@ func board_different(b1 *Board, b2 *Board) bool {
 }
 */
 
-
 func PrintBoard(b *Board) {
 	for i := 0; i < b.sideLength; i++ {
 		for j := 0; j < b.sideLength; j++ {
@@ -31,13 +34,35 @@ func PrintBoard(b *Board) {
 	}
 }
 
+var verboseFlag *bool = flag.Bool("v", false, "if set prints neatly the time of each execution, e.g ./golife -v 100 100 10")
+
 func main() {
-	var boardSideLength int = 1 << 10
-	var nIterations int = 1 << 10
-	var nWorkers = 8
+	flag.Parse()
+	args := flag.Args()
+	if len(args) < 3 {
+		log.Fatalf("Missing arguments: %s <BOARD_LENGTH> <NUMBER_ITERATIONS> <NUMBER_THREADS>\n", os.Args[0])
+	}
+
+	boardSideLength, err := strconv.Atoi(args[0])
+	if err != nil {
+		log.Fatalf("Error reading <BOARD_LENGTH>, read: %s\n", args[0])
+	}
+
+	nIterations, err := strconv.Atoi(args[1])
+	if err != nil {
+		log.Fatalf("Error reading <NUMBER_ITERATIONS>, read: %s\n", args[1])
+	}
+
+	nWorkers, err := strconv.Atoi(args[2])
+	if err != nil {
+		log.Fatalf("Error reading <NUMBER_THREADS>, read: %s\n", args[2])
+	}
+
 	var prob float64 = 0.5
 
-	fmt.Printf("Board Size: %d, nIterations: %d, nWorkers: %d\n", boardSideLength, nIterations, nWorkers)
+	if *verboseFlag {
+		fmt.Printf("Board Size: %d, nIterations: %d, nWorkers: %d\n", boardSideLength, nIterations, nWorkers)
+	}
 
 	b1 := CreateBoard(boardSideLength)
 	b2 := CreateBoard(boardSideLength)
@@ -53,6 +78,8 @@ func main() {
 		}
 	}
 
+	durations := make([]time.Duration, 0, 3)
+
 	var start time.Time
 	var t time.Time
 
@@ -62,7 +89,12 @@ func main() {
 		b2.IterateConcurrentlyByLine(nWorkers)
 	}
 	t = time.Now()
-	fmt.Println("Concurrent program elapsed: ", t.Sub(start).String())
+
+	durations = append(durations, t.Sub(start))
+
+	if *verboseFlag {
+		fmt.Println("Concurrent program elapsed: ", durations[0])
+	}
 
 	//Pool Concurrent time
 	start = time.Now()
@@ -72,7 +104,12 @@ func main() {
 	}
 	bp.ReleaseWorkers()
 	t = time.Now()
-	fmt.Println("Pool Concurrent program elapsed: ", t.Sub(start).String())
+
+	durations = append(durations, t.Sub(start))
+
+	if *verboseFlag {
+		fmt.Println("Pool Concurrent program elapsed: ", durations[1])
+	}
 
 	//Sequential time!
 	start = time.Now()
@@ -80,5 +117,17 @@ func main() {
 		b1.IterateSequentially()
 	}
 	t = time.Now()
-	fmt.Println("Sequential program elapsed: ", t.Sub(start).String())
+
+	durations = append(durations, t.Sub(start))
+
+	if *verboseFlag {
+		fmt.Println("Sequential program elapsed: ", durations[2])
+	}
+
+	if !(*verboseFlag) {
+		fmt.Println(durations[0].Seconds())
+		fmt.Println(durations[1].Seconds())
+		fmt.Println(durations[2].Seconds())
+	}
+
 }
