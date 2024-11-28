@@ -2,20 +2,7 @@
 #include <stdio.h>
 #include "board.h"
 
-int is_power2(int side){
-    if(side == 1) return 1;
-    while(side > 1) {
-        if(side%2) return 0;
-        side /= 2;
-    }
-    return 1;
-}
-
 board_t *create_board(int sideLength){
-    if(!is_power2(sideLength)){
-        return NULL;
-    }
-
     board_t *b = malloc(sizeof(board_t));
     b->boards[0] = malloc(sizeof(int)*sideLength*sideLength);
     b->boards[1] = malloc(sizeof(int)*sideLength*sideLength);

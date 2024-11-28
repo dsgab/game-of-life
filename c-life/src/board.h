@@ -7,7 +7,6 @@ typedef struct _board_t{
     int sideLenght;
 }board_t;
 
-int is_power2(int side);
 board_t *create_board(int sideLength);
 int num_neighbors(board_t* b, int x, int y);
 int subtable_work(board_t *b, int x, int y, int width, int height);
