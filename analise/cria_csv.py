@@ -16,40 +16,40 @@ numRepeticoes = 5
 
 # Gerando as combinações de entrada
 # Inicializando listas para armazenar os resultados
-# results_c = []
+results_c = []
 
 # Executar os testes para C
-# for tam, iteracoes, threads in itertools.product(tamTabuleiro, numIteracoes, numThreads):
-#     command = [c_program, str(tam), str(iteracoes), str(threads)]
+for tam, iteracoes, threads in itertools.product(tamTabuleiro, numIteracoes, numThreads):
+    command = [c_program, str(tam), str(iteracoes), str(threads)]
 
-#     times = []
+    times = []
 
-#     # Rodando cada configuração `numRepeticoes` vezes
-#     for i in range(numRepeticoes):
-#         print(f"executando: {command} : iteracao {i}")
-#         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
-#         time = float(result.stdout.strip())
-#         times.append(time)
+    # Rodando cada configuração `numRepeticoes` vezes
+    for i in range(numRepeticoes):
+        print(f"executando: {command} : iteracao {i}")
+        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+        time = float(result.stdout.strip())
+        times.append(time)
 
-#     # Calculando a média dos tempos
-#     avg_time = np.mean(times)
+    # Calculando a média dos tempos
+    avg_time = np.mean(times)
 
-#     # Salvando os resultados
-#     results_c.append({
-#         "Executavel": "C",
-#         "Tam_Tabuleiro": tam,
-#         "Num_Iteracoes": iteracoes,
-#         "Num_Threads": threads,
-#         "Tempo": avg_time
-#     })
+    # Salvando os resultados
+    results_c.append({
+        "Executavel": "C",
+        "Tam_Tabuleiro": tam,
+        "Num_Iteracoes": iteracoes,
+        "Num_Threads": threads,
+        "Tempo": avg_time
+    })
 
-# # Criando o DataFrame para tabelas
-# df_c = pd.DataFrame(results_c)
+# Criando o DataFrame para tabelas
+df_c = pd.DataFrame(results_c)
 
-# df_c.to_csv("c_values.csv")
+df_c.to_csv("c_values.csv")
 
-# print(df_c)
-# print(results_c)
+print(df_c)
+print(results_c)
 
 # Executar os testes para Go
 results_go = []
